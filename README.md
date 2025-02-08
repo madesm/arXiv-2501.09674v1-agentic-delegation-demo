@@ -1,6 +1,6 @@
 # **Authenticated Delegation and Authorized AI Agents – Toy Demo with MCP Interaction**
 
-https://img.shields.io/badge/in_progress-yellow
+![https://img.shields.io/badge/in_progress-yellow](https://img.shields.io/badge/in_progress-yellow)
 
 > This repository is in progress
 
