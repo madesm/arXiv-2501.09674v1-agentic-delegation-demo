@@ -15,6 +15,9 @@ This demo showcases **AI-driven delegation**, where a **CalendarAgent** is
 authorized to access a user's calendar and retrieve **available time slots**.
 The **agent runs as an MCP server**, exposing an API for querying availability.
 
+The goal is to have a user ( over something like Claude Desktop ) to be able to
+authorize an agent to interact on behalf of the user.
+
 ### **Key Workflow**
 1. A **Flask OAuth server** issues an **access token**, authorizing the
    **CalendarAgent** to access a user’s calendar.
