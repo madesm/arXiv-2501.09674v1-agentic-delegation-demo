@@ -58,6 +58,7 @@ sequenceDiagram
 
   User -->> FlaskOAuthServer : Requests Agent Authorization
   FlaskOAuthServer -->> User : Issues Access Token
+  User -->> MCPClient : sends text to MCP Client
   MCPClient -->> CalendarAgent : Calls MCP API (find_slot) with Access Token
   CalendarAgent -->> FlaskOAuthServer : Fetches Calendar Data
   CalendarAgent -->> MCPClient : Returns Available Time Slots
