@@ -107,6 +107,7 @@ python client.py
 ---
 
 ## **Limitations**
+
 - **Single-Level Delegation:**  
   - The demo supports **direct delegation** but does not implement **multi-hop
     agent delegation**.
@@ -114,6 +115,7 @@ python client.py
   - The **calendar availability** is simulated with static data.
 - **Simplified OAuth Flow:**  
   - No **PKCE, refresh tokens, or user account management**.
+- Many others...
 
 ---
 
