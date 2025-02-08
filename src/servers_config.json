@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "myCal": {
+      "command": "python",
+      "args": [
+        "server.py"
+      ]
+    }
+  }
+}
