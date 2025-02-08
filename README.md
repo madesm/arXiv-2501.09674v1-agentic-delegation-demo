@@ -46,7 +46,7 @@ This demo runs **two parallel servers**:
 sequenceDiagram
   participant User
   participant FlaskOAuthServer
-  actor CalendarAgent (MCP)
+  actor CalendarAgent
   participant MCPClient
 
   User -->> FlaskOAuthServer : Requests Agent Authorization

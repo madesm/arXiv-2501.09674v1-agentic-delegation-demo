@@ -8,7 +8,7 @@ Usage:
   1) Install dependencies:
        pip install flask mcp
   2) Run this file:
-       python mcp_calendar_oauth.py
+       python server.py
 
      This will:
        - Start the Flask OAuth server on port 5000
