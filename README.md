@@ -1,58 +1,129 @@
-# Authenticated Delegation and Authorized AI Agents – Toy Demo with MCP Interaction
+# **Authenticated Delegation and Authorized AI Agents – Toy Demo with MCP Interaction**
 
-This repository demonstrates a toy example of **agentic delegation** and
+This repository demonstrates a **toy example** of **agentic delegation** and
 **authorized AI agents**, inspired by
-[arXiv-2501.09674v1](https://arxiv.org/abs/2501.09674) and integrated with the
+[arXiv-2501.09674](https://arxiv.org/abs/2501.09674), integrated with the
 **Model Context Protocol (MCP)**.
 
-## Overview
+## **Overview**
 
-The goal of this demo is to showcase **delegated resource access** in an
-AI-driven workflow. Specifically, it demonstrates how a **CalendarAgent** is
-granted **view access** to a calendar resource and subsequently interacts with
-an external service to adjust time zones.
+This demo showcases **AI-driven delegation**, where a **CalendarAgent** is
+authorized to access a user's calendar and retrieve **available time slots**.
+The **agent runs as an MCP server**, exposing an API for querying availability.
 
-### Key Interactions:
+### **Key Workflow**
+1. A **Flask OAuth server** issues an **access token**, authorizing the
+   **CalendarAgent** to access a user’s calendar.
+2. The **CalendarAgent (MCP server)** fetches **available time slots** using the
+   **delegated token**.
+3. An **MCP client** interacts with the agent via **MCP APIs** to request
+   available times.
 
-1. A **person delegates calendar access** to the **CalendarAgent**.
-2. The **CalendarAgent** reads the calendar and selects an available time slot.
-3. The **CalendarAgent** invokes the **Model Context Protocol (MCP)** to request
-   a **time zone conversion service**.
-4. The service responds with the adjusted time.
+This pattern enables **secure, structured, AI-driven workflows**, such as:
+- AI assistants managing **personal schedules**.
+- AI-powered bots handling **automated scheduling** via **MCP APIs**.
 
-Although this is a simple toy example, the same pattern applies to **more
-complex agentic interactions**, such as:
+---
 
-- A user delegating access to an AI assistant for managing **personal data**
-  (e.g., address information).
-- The assistant using that data to interact with an MCP service for **automated
-  booking or registrations**.
+## **Architecture**
 
-## Sequence Diagram
+This demo runs **two parallel servers**:
+
+1. **Flask OAuth Server**  
+   - Simulates an **OAuth-based delegation system**.
+   - Issues **delegation tokens** that authorize agent access.
+
+2. **MCP CalendarAgent**  
+   - Runs as an **MCP server**, exposing an API to query **available calendar
+     slots**.
+   - Requires an **access token** to retrieve availability.
+
+---
+
+## **Sequence Diagram**
 
 ```mermaid
 sequenceDiagram
-  participant Person
-  actor CalendarAgent
-  participant TimeService
+  participant User
+  participant FlaskOAuthServer
+  actor CalendarAgent (MCP)
+  participant MCPClient
 
-  Person -->> CalendarAgent : Delegates Calendar Access
-  loop Time Selection
-    CalendarAgent -->> CalendarAgent : Checks Calendar for Availability
-    CalendarAgent -->> CalendarAgent : Selects a Free Time Slot
-  end
-  loop Time Conversion
-    CalendarAgent -->> TimeService : Requests Time Zone Conversion
-    TimeService -->> CalendarAgent : Returns Converted Time
-  end
+  User -->> FlaskOAuthServer : Requests Agent Authorization
+  FlaskOAuthServer -->> User : Issues Access Token
+  MCPClient -->> CalendarAgent : Calls MCP API (find_slot) with Access Token
+  CalendarAgent -->> FlaskOAuthServer : Fetches Calendar Data
+  CalendarAgent -->> MCPClient : Returns Available Time Slots
 ```
 
-## Limitations
+---
 
-- **Limited Delegation Depth:** The demo does not yet support **multi-hop
-  delegation chains**, where an agent delegates access further down a chain.
+## **Demo Components**
 
-This example serves as a foundation for exploring **authenticated delegation,
-agentic workflows, and AI-driven automation** using the **Model Context
-Protocol**.
+### **1. Flask OAuth Server**
+- Issues **delegation tokens** that authorize the **CalendarAgent**.
+- Simulates **secure access control** for AI agents.
 
+### **2. MCP CalendarAgent**
+- Runs an **MCP server** implementing:
+  - **`find_slot`** – Retrieves available time slots from the user's calendar.
+- Requires an **OAuth access token** for authorization.
+
+### **3. MCP Client**
+- Interacts with the **CalendarAgent** via **MCP APIs**.
+- Calls **`find_slot`** to fetch available meeting times.
+
+---
+
+## **Running the Demo**
+
+### **1. Install Dependencies**
+```bash
+pip install flask mcp dotenv
+```
+
+### **2. Start the Flask OAuth Server**
+```bash
+python flask_oauth_server.py
+```
+- This starts the **OAuth delegation server** on `http://localhost:5000`.
+
+### **3. Start the MCP Calendar Agent**
+```bash
+python mcp_calendar_server.py
+```
+- This starts the **MCP agent**, which exposes the **`find_slot`** API.
+
+### **4. Run the MCP Client**
+```bash
+python mcp_calendar_client.py
+```
+- This client will:
+  - **Authenticate** via the **OAuth server**.
+  - **Obtain an access token**.
+  - **Invoke MCP API (`find_slot`)**.
+  - **Print available times**.
+
+---
+
+## **Limitations**
+- **Single-Level Delegation:**  
+  - The demo supports **direct delegation** but does not implement **multi-hop
+    agent delegation**.
+- **Mock Calendar Data:**  
+  - The **calendar availability** is simulated with static data.
+- **Simplified OAuth Flow:**  
+  - No **PKCE, refresh tokens, or user account management**.
+
+---
+
+## **Next Steps**
+- Extend the system to support **multi-agent delegation**.
+- Implement **real calendar integration** (Google Calendar, iCal, etc.).
+- Expand authorization with **OAuth refresh tokens**.
+
+---
+
+This demo provides a **starting point** for **AI-driven delegation workflows**
+using **MCP**, **OAuth**, and **agent-based automation** but much more work is
+to be done to improve advance the flows. 🚀
