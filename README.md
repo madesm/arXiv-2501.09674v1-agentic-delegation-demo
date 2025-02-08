@@ -84,19 +84,19 @@ pip install flask mcp dotenv
 
 ### **2. Start the Flask OAuth Server**
 ```bash
-python flask_oauth_server.py
+python server.py
 ```
 - This starts the **OAuth delegation server** on `http://localhost:5000`.
 
 ### **3. Start the MCP Calendar Agent**
 ```bash
-python mcp_calendar_server.py
+python mcp server.py
 ```
 - This starts the **MCP agent**, which exposes the **`find_slot`** API.
 
 ### **4. Run the MCP Client**
 ```bash
-python mcp_calendar_client.py
+python client.py
 ```
 - This client will:
   - **Authenticate** via the **OAuth server**.
