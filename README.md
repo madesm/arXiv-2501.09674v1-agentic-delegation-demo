@@ -1,5 +1,9 @@
 # **Authenticated Delegation and Authorized AI Agents – Toy Demo with MCP Interaction**
 
+https://img.shields.io/badge/in_progress-yellow
+
+> This repository is in progress
+
 This repository demonstrates a **toy example** of **agentic delegation** and
 **authorized AI agents**, inspired by
 [arXiv-2501.09674](https://arxiv.org/abs/2501.09674), integrated with the
