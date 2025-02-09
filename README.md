@@ -63,6 +63,10 @@ Expected Result:
 {"agent_result":{"_meta":null,"content":[{"type":"text","text":"{\n  \"start\": \"2025-03-01T11:45\",\n  \"end\": \"2025-03-01T12:15\"\n}"}],"isError":false}}
 ```
 
+### Demo Video
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Xz_CiMUbik0?si=ytkHXtAfIEElHWai" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 ## **Architecture**
 
 This demo runs **two parallel servers**:
