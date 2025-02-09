@@ -7,7 +7,7 @@
 This repository demonstrates a **toy example** of **agentic delegation** and
 **authorized AI agents**, inspired by
 [arXiv-2501.09674](https://arxiv.org/abs/2501.09674), integrated with the
-**Model Context Protocol (MCP)**.
+**Model Context Protocol (MCP)**. The access token generated over the oauth flow is passed to the MCP agent when called. 
 
 ## **Overview**
 
