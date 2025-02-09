@@ -154,7 +154,9 @@ python client.py
   - The **calendar availability** is simulated with static data.
 - **Simplified OAuth Flow:**  
   - No **PKCE, refresh tokens, or user account management**.
+- **Access token is pushed through**: Need to think about this. There's likely a better way to do this.
 - Many others...
+
 
 ---
 
