@@ -55,6 +55,12 @@ or if using Makefile:
 `make client`
 
 3. Visit `http://localhost:9000/start` in your browser to authorize the agent.
+
+Login with the credential: 
+
+user: `alice`
+password: `password123`
+
 4. Visit `http://localhost:9000/call_agent` to call the agent action and get the first time slot.
 
 Expected Result:
