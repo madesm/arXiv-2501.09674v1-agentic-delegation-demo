@@ -30,7 +30,38 @@ This pattern enables **secure, structured, AI-driven workflows**, such as:
 - AI assistants managing **personal schedules**.
 - AI-powered bots handling **automated scheduling** via **MCP APIs**.
 
----
+## Running 
+
+To get started:
+
+1. Run the oauth server
+
+```sh
+python -m uvicorn oauth_server:app --reload --port 8000
+```
+
+of if using Makefile
+
+`make oauth_server`
+
+2. Run the client in another terminal window:
+
+```sh
+python client_with_callback.py
+```
+
+or if using Makefile:
+
+`make client`
+
+3. Visit `http://localhost:9000/start` in your browser to authorize the agent.
+4. Visit `http://localhost:9000/call_agent` to call the agent action and get the first time slot.
+
+Expected Result:
+
+```sh
+{"agent_result":{"_meta":null,"content":[{"type":"text","text":"{\n  \"start\": \"2025-03-01T11:45\",\n  \"end\": \"2025-03-01T12:15\"\n}"}],"isError":false}}
+```
 
 ## **Architecture**
 
@@ -137,3 +168,4 @@ python client.py
 This demo provides a **starting point** for **AI-driven delegation workflows**
 using **MCP**, **OAuth**, and **agent-based automation** but much more work is
 to be done to improve advance the flows. 🚀
+

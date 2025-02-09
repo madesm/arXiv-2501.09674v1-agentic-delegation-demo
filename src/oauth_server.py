@@ -285,7 +285,7 @@ def token_exchange(data: TokenRequest):
 # UTILITY ENDPOINT (OPTIONAL) for token validation
 ##############################################################################
 
-@app.get("/oauth/validate")
+@app.post("/oauth/validate")
 def validate(token: str):
     """
     Optional endpoint to validate or introspect a token (like /introspect).
