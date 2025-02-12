@@ -2,35 +2,52 @@
 """
 vc_client.py
 
-Requests a Verifiable Credential (VC) from the issuer, then presents it to the agent.
+An MCP client that:
+1. Requests a verifiable credential (VC) from the issuer.
+2. Uses the VC to call the MCP agent's 'find_slot' tool.
 """
 
 import requests
 import json
+import asyncio
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client
 
+# Configuration
 VC_ISSUER_URL = "http://localhost:8000/issue_vc"
-VC_AGENT_URL = "http://localhost:9000/call_agent"
+MCP_AGENT_COMMAND = "python"
+MCP_AGENT_ARGS = ["vc_agent.py"]
 
+# The holder's DID and required permission
 HOLDER_DID = "did:example:holder123"
 PERMISSIONS = ["calendar.view"]
 
-# Step 1: Request a VC from the issuer
-print("Requesting Verifiable Credential (VC)...")
-response = requests.post(VC_ISSUER_URL, json={"holder_did": HOLDER_DID, "permissions": PERMISSIONS})
+async def call_mcp_agent(vc: str):
+    # Configure the MCP client to launch the agent
+    server_params = StdioServerParameters(
+        command=MCP_AGENT_COMMAND,
+        args=MCP_AGENT_ARGS,
+        env=None
+    )
+    async with stdio_client(server_params) as (read, write):
+        async with ClientSession(read, write) as session:
+            await session.initialize()
+            result = await session.call_tool("find_slot", {"verifiable_credential": vc})
+            ret = {"ret": json.loads(result.content[0].text)}
+            print(json.dumps(ret, indent=4))
 
-if response.status_code != 200:
-    print("Error obtaining VC:", response.text)
-    exit(1)
+def main():
+    # Step 1: Request a VC from the issuer
+    print("Requesting Verifiable Credential (VC) from issuer...")
+    response = requests.post(VC_ISSUER_URL, json={"holder_did": HOLDER_DID, "permissions": PERMISSIONS})
+    if response.status_code != 200:
+        print("Error obtaining VC:", response.text)
+        return
+    vc = response.json()["verifiable_credential"]
+    print("Received VC:", vc)
 
-vc = response.json()["verifiable_credential"]
-print("Received Verifiable Credential:", vc)
+    # Step 2: Use the VC to call the MCP agent
+    asyncio.run(call_mcp_agent(vc))
 
-# Step 2: Use the VC to call the agent
-print("\nCalling agent with VC...")
-agent_response = requests.post(VC_AGENT_URL, json={"verifiable_credential": vc})
-
-if agent_response.status_code != 200:
-    print("Agent denied access:", agent_response.text)
-    exit(1)
-
-print("Agent Response:", json.dumps(agent_response.json(), indent=2))
+if __name__ == "__main__":
+    main()

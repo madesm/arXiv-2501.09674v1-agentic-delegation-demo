@@ -2,72 +2,62 @@
 """
 vc_agent.py
 
-Receives a Verifiable Credential (VC), verifies it, and allows or denies access.
+An MCP server (CalendarAgent) that exposes a 'find_slot' tool.
+The tool requires a verifiable credential (VC) granting 'calendar.view' permission.
+Run: mcp dev vc_agent.py  (or python vc_agent.py)
 """
 
-import jwt
 import json
 import logging
 from datetime import datetime, timedelta
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
 
-# Agent Setup
-app = FastAPI()
+from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp.exceptions import ToolError
+from vc_verifier import verify_vc
+
+# Configure logging
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("CalendarMCP")
 
-# Secret for verifying signatures (replace with a real verification key)
-ISSUER_SECRET = "super-secret-key"
-
-# Mock calendar
+# Mocked calendar data
 MOCK_CALENDAR = [
     {"start": "2025-03-01T09:00:00", "end": "2025-03-01T10:00:00"},
     {"start": "2025-03-01T11:00:00", "end": "2025-03-01T11:30:00"},
 ]
 
+# Set up the MCP server
+mcp = FastMCP("CalendarAgent", description="MCP server requiring a VC to find calendar slots.")
 
-class VCRequest(BaseModel):
-    verifiable_credential: str
-
-
-def verify_vc(vc_jwt: str):
+@mcp.tool(name="find_slot")
+def find_slot(verifiable_credential: str, duration_minutes: int = 30) -> str:
     """
-    Verify and decode the Verifiable Credential (VC).
+    Finds the next free slot after the last event.
+    Requires a VC (as a JWT) that grants the 'calendar.view' permission.
     """
-    try:
-        payload = jwt.decode(vc_jwt, ISSUER_SECRET, algorithms=["HS256"])
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="VC expired")
-    except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid VC")
+    logger.info("Verifying VC for find_slot request.")
+    holder_did = verify_vc(verifiable_credential)
+    logger.info(f"Verified holder DID: {holder_did}")
 
-    if "calendar.view" not in payload["credentialSubject"]["permissions"]:
-        raise HTTPException(status_code=403, detail="Permission denied")
+    # Process the mocked calendar events
+    events = []
+    for e in MOCK_CALENDAR:
+        start_dt = datetime.fromisoformat(e["start"])
+        end_dt = datetime.fromisoformat(e["end"])
+        events.append((start_dt, end_dt))
+    events.sort(key=lambda x: x[0])
 
-    return payload["credentialSubject"]["id"]
-
-
-@app.post("/call_agent")
-def call_agent(request: VCRequest):
-    """
-    Endpoint that requires a valid VC before executing actions.
-    """
-    user_did = verify_vc(request.verifiable_credential)
-    logging.info(f"Verified DID: {user_did}")
-
-    # Find next free time slot
-    last_end = datetime.fromisoformat(MOCK_CALENDAR[-1]["end"])
+    # Simple logic: free time is after the last event plus a 15-minute buffer
+    last_end = events[-1][1]
     free_start = last_end + timedelta(minutes=15)
-    free_end = free_start + timedelta(minutes=30)
+    free_end = free_start + timedelta(minutes=duration_minutes)
 
     result = {
         "start": free_start.isoformat(timespec="minutes"),
         "end": free_end.isoformat(timespec="minutes"),
     }
-
-    return {"agent_result": result}
-
+    logger.info(f"Returning free slot: {result}")
+    return json.dumps(result, indent=2)
 
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=9000)
+    logger.info("Starting Calendar MCP Server with VC-based delegation...")
+    mcp.run()
